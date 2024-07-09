@@ -36,7 +36,7 @@ const player = new Fighter({
         y: 0
     },
     offset: {
-        x: 0,
+        x: -50,
         y: 0
     },
     imageSrc: './img/samuraiMack/Idle.png',
@@ -62,6 +62,10 @@ const player = new Fighter({
         fall: {
             imageSrc: './img/samuraiMack/Fall.png',
             framesMax: 2
+        },
+        attack1: {
+            imageSrc: './img/samuraiMack/Attack1.png',
+            framesMax: 6
         }
     },
 })
@@ -79,7 +83,36 @@ const enemy = new Fighter({
     offset: {
         x: -50,
         y: 0
-    }
+    },
+    imageSrc: './img/kenji/Idle.png',
+    scale: 2.5,
+    framesMax: 4,
+    offset: {
+        x: 215,
+        y: 167
+    },
+    sprites: {
+        idle: {
+            imageSrc: './img/kenji/Idle.png',
+            framesMax: 4
+        },
+        run: {
+            imageSrc: './img/kenji/Run.png',
+            framesMax: 8
+        },
+        jump: {
+            imageSrc: './img/kenji/Jump.png',
+            framesMax: 2
+        },
+        fall: {
+            imageSrc: './img/kenji/Fall.png',
+            framesMax: 2
+        },
+        attack1: {
+            imageSrc: './img/kenji/Attack1.png',
+            framesMax: 4
+        }
+    },
 })
 
 player.draw()
@@ -115,7 +148,7 @@ function animate(){
     background.update()
     shop.update()
     player.update()
-    //enemy.update()
+    enemy.update()
     
     player.velocity.x = 0
     enemy.velocity.x = 0
@@ -141,8 +174,19 @@ function animate(){
     //Enemy movement
     if(keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft') {
         enemy.velocity.x = -5
+        enemy.switchSprite('run')
     } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
         enemy.velocity.x = 5
+        enemy.switchSprite('run')
+    } else {
+        enemy.switchSprite('idle')
+    }
+
+    //jumping
+    if (enemy.velocity.y < 0) {
+        enemy.switchSprite('jump')
+    } else if (enemy.velocity.y > 0) {
+        enemy.switchSprite('fall')
     }
 
     //detect for collision
@@ -193,6 +237,7 @@ window.addEventListener('keydown', (event) => {
         case ' ':
             player.attack()
             break
+
         case 'ArrowRight':
             keys.ArrowRight.pressed = true
             enemy.lastKey = 'ArrowRight'
@@ -205,7 +250,7 @@ window.addEventListener('keydown', (event) => {
             enemy.velocity.y = -20
             break
         case 'ArrowDown':
-            enemy.isAttacking = true
+            enemy.attack()
             break
     }
 })
